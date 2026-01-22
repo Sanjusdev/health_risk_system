@@ -100,51 +100,134 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 
-@login_required
 def new_assessment(request):
     """Create new health assessment"""
     if request.method == 'POST':
         form = HealthAssessmentForm(request.POST)
         if form.is_valid():
             assessment = form.save(commit=False)
-            assessment.user = request.user
-            assessment.save()
-            
-            # Process assessment (calculate risks and recommendations)
-            assessment = process_assessment(assessment)
-            assessment.save()
-            
-            messages.success(request, 'Assessment completed successfully!')
-            return redirect('assessment_result', pk=assessment.pk)
+
+            # Only save to database if user is authenticated
+            if request.user.is_authenticated:
+                assessment.user = request.user
+                assessment.save()
+
+                # Process assessment (calculate risks and recommendations)
+                assessment = process_assessment(assessment)
+                assessment.save()
+
+                messages.success(request, 'Assessment completed and saved successfully!')
+                return redirect('assessment_result', pk=assessment.pk)
+            else:
+                # For guest users, calculate BMI and process without saving
+                assessment.calculate_bmi()  # Calculate BMI manually since we don't save
+                assessment = process_assessment(assessment)
+
+                # Store assessment data in session for guest results
+                # Convert Decimal objects to floats for JSON serialization
+                request.session['guest_assessment'] = {
+                    'height': float(assessment.height) if assessment.height else 0,
+                    'weight': float(assessment.weight) if assessment.weight else 0,
+                    'bmi': float(assessment.bmi) if assessment.bmi else 0,
+                    'systolic_bp': assessment.systolic_bp,
+                    'diastolic_bp': assessment.diastolic_bp,
+                    'overall_risk_score': float(assessment.overall_risk_score) if assessment.overall_risk_score else 0,
+                    'risk_level': assessment.risk_level,
+                    'cardiovascular_risk': float(assessment.cardiovascular_risk) if assessment.cardiovascular_risk else 0,
+                    'diabetes_risk': float(assessment.diabetes_risk) if assessment.diabetes_risk else 0,
+                    'lifestyle_risk': float(assessment.lifestyle_risk) if assessment.lifestyle_risk else 0,
+                    'recommendations': assessment.recommendations,
+                }
+
+                messages.info(request, 'Assessment completed! Register or login to save your results.')
+                return redirect('guest_assessment_result')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = HealthAssessmentForm()
-    
+
     return render(request, 'assessment.html', {'form': form})
+
+
+def guest_assessment_result(request):
+    """View guest assessment results from session"""
+    assessment_data = request.session.get('guest_assessment')
+
+    if not assessment_data:
+        messages.error(request, 'No assessment data found. Please complete an assessment first.')
+        return redirect('new_assessment')
+
+    # Create a temporary assessment object from session data
+    class GuestAssessment:
+        def __init__(self, data):
+            self.height = data.get('height')
+            self.weight = data.get('weight')
+            self.bmi = data.get('bmi')
+            self.systolic_bp = data.get('systolic_bp')
+            self.diastolic_bp = data.get('diastolic_bp')
+            self.overall_risk_score = data.get('overall_risk_score')
+            self.risk_level = data.get('risk_level')
+            self.cardiovascular_risk = data.get('cardiovascular_risk')
+            self.diabetes_risk = data.get('diabetes_risk')
+            self.lifestyle_risk = data.get('lifestyle_risk')
+            self.recommendations = data.get('recommendations')
+
+        def get_risk_level_display(self):
+            return dict(HealthAssessment.RISK_LEVEL_CHOICES).get(self.risk_level, 'Unknown')
+
+        def get_risk_level_display(self):
+            return dict(HealthAssessment.RISK_LEVEL_CHOICES).get(self.risk_level, 'Unknown')
+
+    assessment = GuestAssessment(assessment_data)
+
+    # Get BMI and BP categories
+    bmi_category = get_bmi_category(assessment.bmi)
+    bp_category = get_bp_category(assessment.systolic_bp, assessment.diastolic_bp)
+
+    # Split recommendations into a list
+    recommendations_list = []
+    if assessment.recommendations:
+        recommendations_list = [rec.strip() for rec in assessment.recommendations.split('\n\n') if rec.strip()]
+
+    context = {
+        'assessment': assessment,
+        'bmi_category': bmi_category,
+        'bp_category': bp_category,
+        'recommendations_list': recommendations_list,
+        'is_guest': True,
+    }
+
+    return render(request, 'result.html', context)
 
 
 @login_required
 def assessment_result(request, pk):
     """View assessment results"""
     assessment = get_object_or_404(HealthAssessment, pk=pk, user=request.user)
-    
+
     # Get BMI and BP categories
     bmi_category = get_bmi_category(assessment.bmi)
     bp_category = get_bp_category(assessment.systolic_bp, assessment.diastolic_bp)
-    
+
     # Get risk level display
     risk_level_display = dict(HealthAssessment.RISK_LEVEL_CHOICES).get(
         assessment.risk_level, 'Unknown'
     )
-    
+
+    # Split recommendations into a list
+    recommendations_list = []
+    if assessment.recommendations:
+        recommendations_list = [rec.strip() for rec in assessment.recommendations.split('\n\n') if rec.strip()]
+
     context = {
         'assessment': assessment,
         'bmi_category': bmi_category,
         'bp_category': bp_category,
         'risk_level_display': risk_level_display,
+        'recommendations_list': recommendations_list,
+        'is_guest': False,
     }
-    
+
     return render(request, 'result.html', context)
 
 
@@ -152,16 +235,22 @@ def assessment_result(request, pk):
 def assessment_detail(request, pk):
     """View detailed assessment"""
     assessment = get_object_or_404(HealthAssessment, pk=pk, user=request.user)
-    
+
     bmi_category = get_bmi_category(assessment.bmi)
     bp_category = get_bp_category(assessment.systolic_bp, assessment.diastolic_bp)
-    
+
+    # Split recommendations into a list
+    recommendations_list = []
+    if assessment.recommendations:
+        recommendations_list = [rec.strip() for rec in assessment.recommendations.split('\n\n') if rec.strip()]
+
     context = {
         'assessment': assessment,
         'bmi_category': bmi_category,
         'bp_category': bp_category,
+        'recommendations_list': recommendations_list,
     }
-    
+
     return render(request, 'assessment_detail.html', context)
 
 

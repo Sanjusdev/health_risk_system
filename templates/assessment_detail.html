@@ -341,9 +341,8 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    {% if assessment.recommendations %}
-                    {% for recommendation in assessment.recommendations.split '\n\n' %}
-                    {% if recommendation %}
+                    {% if recommendations_list %}
+                    {% for recommendation in recommendations_list %}
                     <div class="d-flex mb-3">
                         <div class="me-3">
                             <span class="badge bg-primary rounded-circle p-2">
@@ -354,10 +353,9 @@
                             <p class="mb-0">{{ recommendation }}</p>
                         </div>
                     </div>
-                    {% endif %}
                     {% endfor %}
                     {% else %}
-                    <p class="text-muted">No specific recommendations at this time.</p>
+                    <p class="text-muted mb-0">No recommendations available.</p>
                     {% endif %}
                 </div>
             </div>

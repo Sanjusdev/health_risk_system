@@ -15,6 +15,7 @@ urlpatterns = [
     
     # Assessments
     path('assessment/new/', views.new_assessment, name='new_assessment'),
+    path('assessment/guest/result/', views.guest_assessment_result, name='guest_assessment_result'),
     path('assessment/<int:pk>/result/', views.assessment_result, name='assessment_result'),
     path('assessment/<int:pk>/', views.assessment_detail, name='assessment_detail'),
     path('assessment/history/', views.assessment_history, name='assessment_history'),

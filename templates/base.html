@@ -250,15 +250,15 @@
                             <i class="fas fa-home me-1"></i> Home
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'new_assessment' %}">
+                            <i class="fas fa-clipboard-list me-1"></i> Assessment
+                        </a>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'dashboard' %}">
                             <i class="fas fa-tachometer-alt me-1"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'new_assessment' %}">
-                            <i class="fas fa-clipboard-list me-1"></i> New Assessment
                         </a>
                     </li>
                     <li class="nav-item">
