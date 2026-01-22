@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block title %}New Assessment - Health Risk Assessment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h2 class="fw-bold mb-1">Health Risk Assessment</h2>
+                    <p class="text-muted">Please fill in your health information accurately for the best results</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="assessmentForm">
+                        {% csrf_token %}
+                        
+                        <!-- Physical Measurements -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-ruler-vertical text-primary me-2"></i>
+                                Physical Measurements
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="id_height" class="form-label">Height (cm) *</label>
+                                    {{ form.height }}
+                                    {% if form.height.errors %}
+                                    <div class="text-danger small mt-1">{{ form.height.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_weight" class="form-label">Weight (kg) *</label>
+                                    {{ form.weight }}
+                                    {% if form.weight.errors %}
+                                    <div class="text-danger small mt-1">{{ form.weight.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_waist_circumference" class="form-label">Waist Circumference (cm)</label>
+                                    {{ form.waist_circumference }}
+                                    {% if form.waist_circumference.errors %}
+                                    <div class="text-danger small mt-1">{{ form.waist_circumference.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Vital Signs -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-heartbeat text-danger me-2"></i>
+                                Vital Signs
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="id_systolic_bp" class="form-label">Systolic BP (mmHg) *</label>
+                                    {{ form.systolic_bp }}
+                                    {% if form.systolic_bp.errors %}
+                                    <div class="text-danger small mt-1">{{ form.systolic_bp.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Upper number (e.g., 120)</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_diastolic_bp" class="form-label">Diastolic BP (mmHg) *</label>
+                                    {{ form.diastolic_bp }}
+                                    {% if form.diastolic_bp.errors %}
+                                    <div class="text-danger small mt-1">{{ form.diastolic_bp.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Lower number (e.g., 80)</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_heart_rate" class="form-label">Resting Heart Rate (bpm)</label>
+                                    {{ form.heart_rate }}
+                                    {% if form.heart_rate.errors %}
+                                    <div class="text-danger small mt-1">{{ form.heart_rate.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Blood Work (Optional) -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-tint text-info me-2"></i>
+                                Blood Work <span class="text-muted fw-normal">(Optional)</span>
+                            </h5>
+                            <p class="text-muted small mb-3">If you have recent blood test results, enter them here for a more accurate assessment.</p>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="id_blood_sugar" class="form-label">Fasting Blood Sugar (mg/dL)</label>
+                                    {{ form.blood_sugar }}
+                                    {% if form.blood_sugar.errors %}
+                                    <div class="text-danger small mt-1">{{ form.blood_sugar.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="id_cholesterol_total" class="form-label">Total Cholesterol (mg/dL)</label>
+                                    {{ form.cholesterol_total }}
+                                    {% if form.cholesterol_total.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cholesterol_total.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="id_cholesterol_hdl" class="form-label">HDL Cholesterol (mg/dL)</label>
+                                    {{ form.cholesterol_hdl }}
+                                    {% if form.cholesterol_hdl.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cholesterol_hdl.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="id_cholesterol_ldl" class="form-label">LDL Cholesterol (mg/dL)</label>
+                                    {{ form.cholesterol_ldl }}
+                                    {% if form.cholesterol_ldl.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cholesterol_ldl.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Lifestyle Factors -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-running text-success me-2"></i>
+                                Lifestyle Factors
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="id_activity_level" class="form-label">Physical Activity Level *</label>
+                                    {{ form.activity_level }}
+                                    {% if form.activity_level.errors %}
+                                    <div class="text-danger small mt-1">{{ form.activity_level.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_smoking_status" class="form-label">Smoking Status *</label>
+                                    {{ form.smoking_status }}
+                                    {% if form.smoking_status.errors %}
+                                    <div class="text-danger small mt-1">{{ form.smoking_status.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_alcohol_consumption" class="form-label">Alcohol Consumption *</label>
+                                    {{ form.alcohol_consumption }}
+                                    {% if form.alcohol_consumption.errors %}
+                                    <div class="text-danger small mt-1">{{ form.alcohol_consumption.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_diet_quality" class="form-label">Diet Quality *</label>
+                                    {{ form.diet_quality }}
+                                    {% if form.diet_quality.errors %}
+                                    <div class="text-danger small mt-1">{{ form.diet_quality.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_sleep_quality" class="form-label">Sleep Quality *</label>
+                                    {{ form.sleep_quality }}
+                                    {% if form.sleep_quality.errors %}
+                                    <div class="text-danger small mt-1">{{ form.sleep_quality.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="id_stress_level" class="form-label">Stress Level *</label>
+                                    {{ form.stress_level }}
+                                    {% if form.stress_level.errors %}
+                                    <div class="text-danger small mt-1">{{ form.stress_level.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Medical History -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-notes-medical text-warning me-2"></i>
+                                Medical History
+                            </h5>
+                            <p class="text-muted small mb-3">Check all conditions that apply to you or your immediate family.</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-3">Personal History</h6>
+                                    <div class="form-check mb-2">
+                                        {{ form.has_diabetes }}
+                                        <label class="form-check-label" for="id_has_diabetes">
+                                            I have been diagnosed with diabetes
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        {{ form.has_hypertension }}
+                                        <label class="form-check-label" for="id_has_hypertension">
+                                            I have been diagnosed with hypertension
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        {{ form.has_heart_disease }}
+                                        <label class="form-check-label" for="id_has_heart_disease">
+                                            I have been diagnosed with heart disease
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-3">Family History</h6>
+                                    <div class="form-check mb-2">
+                                        {{ form.family_history_heart }}
+                                        <label class="form-check-label" for="id_family_history_heart">
+                                            Family history of heart disease
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        {{ form.family_history_diabetes }}
+                                        <label class="form-check-label" for="id_family_history_diabetes">
+                                            Family history of diabetes
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        {{ form.family_history_cancer }}
+                                        <label class="form-check-label" for="id_family_history_cancer">
+                                            Family history of cancer
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit -->
+                        <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Submit Assessment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // BMI Calculator Preview
+    const heightInput = document.getElementById('id_height');
+    const weightInput = document.getElementById('id_weight');
+    
+    function calculateBMI() {
+        const height = parseFloat(heightInput.value);
+        const weight = parseFloat(weightInput.value);
+        
+        if (height && weight && height > 0) {
+            const heightM = height / 100;
+            const bmi = (weight / (heightM * heightM)).toFixed(1);
+            
+            let category = '';
+            if (bmi < 18.5) category = 'Underweight';
+            else if (bmi < 25) category = 'Normal';
+            else if (bmi < 30) category = 'Overweight';
+            else category = 'Obese';
+            
+            // You could display this somewhere if needed
+            console.log(`BMI: ${bmi} (${category})`);
+        }
+    }
+    
+    if (heightInput && weightInput) {
+        heightInput.addEventListener('input', calculateBMI);
+        weightInput.addEventListener('input', calculateBMI);
+    }
+</script>
+{% endblock %}

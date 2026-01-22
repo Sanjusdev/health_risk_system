@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Health Risk Assessment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h2 class="fw-bold mb-1">{{ title }}</h2>
+                    <p class="text-muted">Set a health goal to track your progress</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="id_goal_type" class="form-label">Goal Type *</label>
+                                {{ form.goal_type }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_status" class="form-label">Status</label>
+                                {{ form.status }}
+                            </div>
+                            <div class="col-12">
+                                <label for="id_title" class="form-label">Goal Title *</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-12">
+                                <label for="id_description" class="form-label">Description</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        
+                        <h5 class="fw-bold mb-3">Target & Progress</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="id_current_value" class="form-label">Current Value</label>
+                                {{ form.current_value }}
+                                <div class="form-text">e.g., 80 kg, 30 min/day</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_target_value" class="form-label">Target Value</label>
+                                {{ form.target_value }}
+                                <div class="form-text">e.g., 70 kg, 60 min/day</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="id_progress" class="form-label">Progress (%)</label>
+                                {{ form.progress }}
+                            </div>
+                        </div>
+                        
+                        <h5 class="fw-bold mb-3">Timeline</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="id_start_date" class="form-label">Start Date *</label>
+                                {{ form.start_date }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_target_date" class="form-label">Target Date *</label>
+                                {{ form.target_date }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_notes" class="form-label">Notes</label>
+                            {{ form.notes }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a href="{% url 'goals_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Goal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

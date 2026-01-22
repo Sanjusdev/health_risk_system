@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Assessment History - Health Risk Assessment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">Assessment History</h1>
+            <p class="text-muted">View all your past health assessments</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'new_assessment' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>New Assessment
+            </a>
+        </div>
+    </div>
+    
+    {% if assessments %}
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>BMI</th>
+                            <th>Blood Pressure</th>
+                            <th>Overall Risk</th>
+                            <th>Risk Level</th>
+                            <th>Cardiovascular</th>
+                            <th>Diabetes</th>
+                            <th>Lifestyle</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in assessments %}
+                        <tr>
+                            <td>
+                                <strong>{{ assessment.created_at|date:"M d, Y" }}</strong>
+                                <br>
+                                <small class="text-muted">{{ assessment.created_at|time:"g:i A" }}</small>
+                            </td>
+                            <td>{{ assessment.bmi }}</td>
+                            <td>{{ assessment.systolic_bp }}/{{ assessment.diastolic_bp }}</td>
+                            <td>
+                                <strong>{{ assessment.overall_risk_score }}%</strong>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if assessment.risk_level == 'low' %}risk-low
+                                    {% elif assessment.risk_level == 'moderate' %}risk-moderate
+                                    {% elif assessment.risk_level == 'high' %}risk-high
+                                    {% else %}risk-very-high{% endif %}">
+                                    {{ assessment.get_risk_level_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress" style="width: 60px; height: 6px;">
+                                    <div class="progress-bar 
+                                        {% if assessment.cardiovascular_risk < 25 %}bg-success
+                                        {% elif assessment.cardiovascular_risk < 50 %}bg-warning
+                                        {% else %}bg-danger{% endif %}" 
+                                        style="width: {{ assessment.cardiovascular_risk }}%"></div>
+                                </div>
+                                <small>{{ assessment.cardiovascular_risk }}%</small>
+                            </td>
+                            <td>
+                                <div class="progress" style="width: 60px; height: 6px;">
+                                    <div class="progress-bar 
+                                        {% if assessment.diabetes_risk < 25 %}bg-success
+                                        {% elif assessment.diabetes_risk < 50 %}bg-warning
+                                        {% else %}bg-danger{% endif %}" 
+                                        style="width: {{ assessment.diabetes_risk }}%"></div>
+                                </div>
+                                <small>{{ assessment.diabetes_risk }}%</small>
+                            </td>
+                            <td>
+                                <div class="progress" style="width: 60px; height: 6px;">
+                                    <div class="progress-bar 
+                                        {% if assessment.lifestyle_risk < 25 %}bg-success
+                                        {% elif assessment.lifestyle_risk < 50 %}bg-warning
+                                        {% else %}bg-danger{% endif %}" 
+                                        style="width: {{ assessment.lifestyle_risk }}%"></div>
+                                </div>
+                                <small>{{ assessment.lifestyle_risk }}%</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'assessment_detail' assessment.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress Chart -->
+    {% if assessments.count > 1 %}
+    <div class="card mt-4">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+            <h5 class="fw-bold mb-0">Risk Score Trend</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="trendChart" height="100"></canvas>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+            <h4>No Assessments Yet</h4>
+            <p class="text-muted mb-4">You haven't completed any health assessments yet.</p>
+            <a href="{% url 'new_assessment' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Take Your First Assessment
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if assessments.count > 1 %}
+<script>
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    
+    const labels = [{% for a in assessments reversed %}'{{ a.created_at|date:"M d" }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const overallData = [{% for a in assessments reversed %}{{ a.overall_risk_score }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const cardioData = [{% for a in assessments reversed %}{{ a.cardiovascular_risk }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const diabetesData = [{% for a in assessments reversed %}{{ a.diabetes_risk }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const lifestyleData = [{% for a in assessments reversed %}{{ a.lifestyle_risk }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Overall Risk',
+                    data: overallData,
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Cardiovascular',
+                    data: cardioData,
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    backgroundColor: 'transparent',
+                    tension: 0.4
+                },
+                {
+                    label: 'Diabetes',
+                    data: diabetesData,
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    backgroundColor: 'transparent',
+                    tension: 0.4
+                },
+                {
+                    label: 'Lifestyle',
+                    data: lifestyleData,
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    backgroundColor: 'transparent',
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

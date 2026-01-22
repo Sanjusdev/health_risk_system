@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Health Goals - Health Risk Assessment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">Health Goals</h1>
+            <p class="text-muted">Track your health improvement goals</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'goal_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>New Goal
+            </a>
+        </div>
+    </div>
+    
+    {% if goals %}
+    <div class="row g-4">
+        {% for goal in goals %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge 
+                            {% if goal.status == 'active' %}bg-primary
+                            {% elif goal.status == 'completed' %}bg-success
+                            {% elif goal.status == 'paused' %}bg-warning
+                            {% else %}bg-secondary{% endif %}">
+                            {{ goal.get_status_display }}
+                        </span>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-link text-muted" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'goal_edit' goal.pk %}"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'goal_delete' goal.pk %}"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-2">{{ goal.title }}</h5>
+                    <p class="text-muted small mb-3">{{ goal.get_goal_type_display }}</p>
+                    
+                    {% if goal.description %}
+                    <p class="text-muted small mb-3">{{ goal.description|truncatewords:20 }}</p>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted">Progress</span>
+                            <span class="small fw-medium">{{ goal.progress }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar 
+                                {% if goal.progress < 25 %}bg-danger
+                                {% elif goal.progress < 50 %}bg-warning
+                                {% elif goal.progress < 75 %}bg-info
+                                {% else %}bg-success{% endif %}" 
+                                style="width: {{ goal.progress }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span><i class="fas fa-calendar me-1"></i>{{ goal.start_date|date:"M d" }}</span>
+                        <span><i class="fas fa-flag-checkered me-1"></i>{{ goal.target_date|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    {% if goal.target_value %}
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Current</small>
+                                <strong>{{ goal.current_value|default:"--" }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Target</small>
+                                <strong>{{ goal.target_value }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-white border-0 pb-3">
+                    <a href="{% url 'goal_edit' goal.pk %}" class="btn btn-sm btn-outline-primary w-100">
+                        <i class="fas fa-edit me-2"></i>Update Progress
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-bullseye fa-4x text-muted mb-3"></i>
+            <h4>No Goals Yet</h4>
+            <p class="text-muted mb-4">Set health goals to track your progress and stay motivated.</p>
+            <a href="{% url 'goal_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create Your First Goal
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+
+{% block title %}Assessment Details - Health Risk Assessment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'assessment_history' %}">History</a></li>
+                    <li class="breadcrumb-item active">Assessment Details</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold">Assessment Details</h1>
+            <p class="text-muted">Completed on {{ assessment.created_at|date:"F d, Y at g:i A" }}</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Left Column - Risk Summary -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center p-4">
+                    <h5 class="fw-bold mb-3">Overall Risk Score</h5>
+                    <div class="display-2 fw-bold mb-2 
+                        {% if assessment.risk_level == 'low' %}text-success
+                        {% elif assessment.risk_level == 'moderate' %}text-warning
+                        {% elif assessment.risk_level == 'high' %}text-danger
+                        {% else %}text-danger{% endif %}">
+                        {{ assessment.overall_risk_score }}%
+                    </div>
+                    <span class="badge fs-6 
+                        {% if assessment.risk_level == 'low' %}risk-low
+                        {% elif assessment.risk_level == 'moderate' %}risk-moderate
+                        {% elif assessment.risk_level == 'high' %}risk-high
+                        {% else %}risk-very-high{% endif %}">
+                        {{ assessment.get_risk_level_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h6 class="fw-bold mb-0">Risk Breakdown</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Cardiovascular</span>
+                            <span class="fw-medium">{{ assessment.cardiovascular_risk }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar 
+                                {% if assessment.cardiovascular_risk < 25 %}bg-success
+                                {% elif assessment.cardiovascular_risk < 50 %}bg-warning
+                                {% else %}bg-danger{% endif %}" 
+                                style="width: {{ assessment.cardiovascular_risk }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Diabetes</span>
+                            <span class="fw-medium">{{ assessment.diabetes_risk }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar 
+                                {% if assessment.diabetes_risk < 25 %}bg-success
+                                {% elif assessment.diabetes_risk < 50 %}bg-warning
+                                {% else %}bg-danger{% endif %}" 
+                                style="width: {{ assessment.diabetes_risk }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Lifestyle</span>
+                            <span class="fw-medium">{{ assessment.lifestyle_risk }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar 
+                                {% if assessment.lifestyle_risk < 25 %}bg-success
+                                {% elif assessment.lifestyle_risk < 50 %}bg-warning
+                                {% else %}bg-danger{% endif %}" 
+                                style="width: {{ assessment.lifestyle_risk }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="riskChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Details -->
+        <div class="col-lg-8">
+            <!-- Physical Measurements -->
+            <div class="card mb-4">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-ruler-vertical text-primary me-2"></i>
+                        Physical Measurements
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Height</small>
+                                <strong class="h5">{{ assessment.height }} cm</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Weight</small>
+                                <strong class="h5">{{ assessment.weight }} kg</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">BMI</small>
+                                <strong class="h5">{{ assessment.bmi }}</strong>
+                                <span class="badge 
+                                    {% if bmi_category == 'Normal' %}bg-success
+                                    {% elif bmi_category == 'Overweight' %}bg-warning
+                                    {% else %}bg-danger{% endif %} d-block mt-1">
+                                    {{ bmi_category }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Waist</small>
+                                <strong class="h5">{{ assessment.waist_circumference|default:"--" }} cm</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vital Signs -->
+            <div class="card mb-4">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-heartbeat text-danger me-2"></i>
+                        Vital Signs
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Blood Pressure</small>
+                                <strong class="h5">{{ assessment.systolic_bp }}/{{ assessment.diastolic_bp }} mmHg</strong>
+                                <span class="badge 
+                                    {% if bp_category == 'Normal' %}bg-success
+                                    {% elif bp_category == 'Elevated' %}bg-warning
+                                    {% else %}bg-danger{% endif %} d-block mt-1">
+                                    {{ bp_category }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Heart Rate</small>
+                                <strong class="h5">{{ assessment.heart_rate|default:"--" }} bpm</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Blood Sugar</small>
+                                <strong class="h5">{{ assessment.blood_sugar|default:"--" }} mg/dL</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cholesterol -->
+            {% if assessment.cholesterol_total %}
+            <div class="card mb-4">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-tint text-info me-2"></i>
+                        Cholesterol Levels
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">Total Cholesterol</small>
+                                <strong class="h5">{{ assessment.cholesterol_total }} mg/dL</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">HDL (Good)</small>
+                                <strong class="h5">{{ assessment.cholesterol_hdl|default:"--" }} mg/dL</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <small class="text-muted d-block">LDL (Bad)</small>
+                                <strong class="h5">{{ assessment.cholesterol_ldl|default:"--" }} mg/dL</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Lifestyle Factors -->
+            <div class="card mb-4">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-running text-success me-2"></i>
+                        Lifestyle Factors
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-dumbbell text-primary me-3 fa-lg"></i>
+                                <div>
+                                    <small class="text-muted d-block">Activity Level</small>
+                                    <strong>{{ assessment.get_activity_level_display }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-smoking{% if assessment.smoking_status == 'never' %}-ban text-success{% else %} text-danger{% endif %} me-3 fa-lg"></i>
+                                <div>
+                                    <small class="text-muted d-block">Smoking</small>
+                                    <strong>{{ assessment.get_smoking_status_display }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-wine-glass text-warning me-3 fa-lg"></i>
+                                <div>
+                                    <small class="text-muted d-block">Alcohol</small>
+                                    <strong>{{ assessment.get_alcohol_consumption_display }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-utensils text-info me-3 fa-lg"></i>
+                                <div>
+                                    <small class="text-muted d-block">Diet Quality</small>
+                                    <strong>{{ assessment.get_diet_quality_display }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-bed text-secondary me-3 fa-lg"></i>
+                                <div>
+                                    <small class="text-muted d-block">Sleep Quality</small>
+                                    <strong>{{ assessment.get_sleep_quality_display }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="fas fa-brain text-danger me-3 fa-lg"></i>
+                                <div>
+                                    <small class="text-muted d-block">Stress Level</small>
+                                    <strong>{{ assessment.get_stress_level_display }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Medical History -->
+            <div class="card mb-4">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-notes-medical text-warning me-2"></i>
+                        Medical History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3">Personal Conditions</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if assessment.has_diabetes %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    Diabetes
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if assessment.has_hypertension %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    Hypertension
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if assessment.has_heart_disease %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    Heart Disease
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3">Family History</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if assessment.family_history_heart %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    Heart Disease
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if assessment.family_history_diabetes %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    Diabetes
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-{% if assessment.family_history_cancer %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    Cancer
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="card">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Recommendations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if assessment.recommendations %}
+                    {% for recommendation in assessment.recommendations.split '\n\n' %}
+                    {% if recommendation %}
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <span class="badge bg-primary rounded-circle p-2">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <p class="mb-0">{{ recommendation }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No specific recommendations at this time.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'assessment_history' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to History
+                </a>
+                <a href="{% url 'new_assessment' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>New Assessment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('riskChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Cardiovascular', 'Diabetes', 'Lifestyle'],
+            datasets: [{
+                label: 'Risk Score',
+                data: [
+                    {{ assessment.cardiovascular_risk }},
+                    {{ assessment.diabetes_risk }},
+                    {{ assessment.lifestyle_risk }}
+                ],
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                borderColor: 'rgba(37, 99, 235, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(37, 99, 235, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 25
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

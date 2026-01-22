@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Health Risk Assessment - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Take Control of Your Health</h1>
+                <p class="lead mb-4">
+                    Get personalized health risk assessments based on your lifestyle, 
+                    medical history, and vital signs. Understand your risks and receive 
+                    actionable recommendations to improve your health.
+                </p>
+                <div class="d-flex gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-clipboard-list me-2"></i>Start Assessment
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Get Started Free
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <i class="fas fa-heartbeat" style="font-size: 15rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Comprehensive Health Assessment</h2>
+            <p class="text-muted">Our platform analyzes multiple health factors to give you a complete picture</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon blue mx-auto">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h5 class="fw-bold">Cardiovascular Risk</h5>
+                    <p class="text-muted mb-0">
+                        Assess your heart health based on blood pressure, cholesterol, and lifestyle factors.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon green mx-auto">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h5 class="fw-bold">Diabetes Risk</h5>
+                    <p class="text-muted mb-0">
+                        Evaluate your risk of developing diabetes based on BMI, blood sugar, and family history.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon orange mx-auto">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <h5 class="fw-bold">Lifestyle Analysis</h5>
+                    <p class="text-muted mb-0">
+                        Get insights on how your diet, exercise, sleep, and stress affect your health.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 text-center">
+                    <div class="feature-icon red mx-auto">
+                        <i class="fas fa-notes-medical"></i>
+                    </div>
+                    <h5 class="fw-bold">Personalized Tips</h5>
+                    <p class="text-muted mb-0">
+                        Receive customized recommendations to reduce your health risks.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="text-muted">Three simple steps to understand your health better</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">1</div>
+                    <h5 class="fw-bold">Enter Your Data</h5>
+                    <p class="text-muted">
+                        Provide your health measurements, lifestyle habits, and medical history through our easy-to-use form.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">2</div>
+                    <h5 class="fw-bold">Get Your Assessment</h5>
+                    <p class="text-muted">
+                        Our algorithm analyzes your data and calculates risk scores for various health conditions.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: bold;">3</div>
+                    <h5 class="fw-bold">Take Action</h5>
+                    <p class="text-muted">
+                        Review personalized recommendations and track your progress over time with our dashboard.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value text-primary">15+</div>
+                    <div class="stat-label">Health Factors Analyzed</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value text-success">3</div>
+                    <div class="stat-label">Risk Categories</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value text-warning">100%</div>
+                    <div class="stat-label">Free to Use</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value text-danger">24/7</div>
+                    <div class="stat-label">Available Anytime</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="card border-0 bg-primary text-white p-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="fw-bold mb-3">Ready to Assess Your Health?</h3>
+                    <p class="mb-0 opacity-75">
+                        Join thousands of users who have taken control of their health. 
+                        Start your free assessment today and get personalized insights.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg">
+                        Start Now <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                        Sign Up Free <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
