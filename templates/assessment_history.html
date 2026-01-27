@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-md-8">
-            <h1 class="fw-bold">Assessment History</h1>
-            <p class="text-muted">View all your past health assessments</p>
+            <h1 class="display-5 fw-bold text-dark mb-3">Assessment History</h1>
+            <p class="text-muted fs-5 mb-0">Track your health journey and view detailed assessment results</p>
         </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{% url 'new_assessment' %}" class="btn btn-primary">
+        <div class="col-md-4 text-md-end d-flex align-items-start justify-content-md-end">
+            <a href="{% url 'new_assessment' %}" class="btn btn-primary px-4 py-3 fw-semibold">
                 <i class="fas fa-plus me-2"></i>New Assessment
             </a>
         </div>
     </div>
     
     {% if assessments %}
-    <div class="card">
+    <div class="card shadow-sm" style="border-radius: 16px; overflow: hidden;">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
@@ -30,7 +30,7 @@
                             <th>Risk Level</th>
                             <th>Cardiovascular</th>
                             <th>Diabetes</th>
-                            <th>Lifestyle</th>
+                            <th>Hypertension</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -165,7 +165,7 @@
                     tension: 0.4
                 },
                 {
-                    label: 'Lifestyle',
+                    label: 'Hypertension',
                     data: lifestyleData,
                     borderColor: 'rgba(34, 197, 94, 1)',
                     backgroundColor: 'transparent',

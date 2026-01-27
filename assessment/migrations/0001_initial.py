@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('risk_level', models.CharField(blank=True, choices=[('low', 'Low Risk'), ('moderate', 'Moderate Risk'), ('high', 'High Risk'), ('very_high', 'Very High Risk')], max_length=20)),
                 ('cardiovascular_risk', models.IntegerField(blank=True, null=True)),
                 ('diabetes_risk', models.IntegerField(blank=True, null=True)),
-                ('lifestyle_risk', models.IntegerField(blank=True, null=True)),
+                ('hypertension_risk', models.IntegerField(blank=True, null=True)),
                 ('recommendations', models.TextField(blank=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),

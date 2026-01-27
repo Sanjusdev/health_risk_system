@@ -5,34 +5,34 @@
 {% block content %}
 <div class="container py-5">
     <!-- Header -->
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'assessment_history' %}">History</a></li>
-                    <li class="breadcrumb-item active">Assessment Details</li>
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb" style="background: transparent; padding: 0;">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'assessment_history' %}" class="text-decoration-none">History</a></li>
+                    <li class="breadcrumb-item active text-muted">Assessment Details</li>
                 </ol>
             </nav>
-            <h1 class="fw-bold">Assessment Details</h1>
-            <p class="text-muted">Completed on {{ assessment.created_at|date:"F d, Y at g:i A" }}</p>
+            <h1 class="display-5 fw-bold text-dark mb-3">Assessment Details</h1>
+            <p class="text-muted fs-5 mb-0">Completed on {{ assessment.created_at|date:"F d, Y at g:i A" }}</p>
         </div>
     </div>
     
     <div class="row g-4">
         <!-- Left Column - Risk Summary -->
         <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-body text-center p-4">
-                    <h5 class="fw-bold mb-3">Overall Risk Score</h5>
-                    <div class="display-2 fw-bold mb-2 
+            <div class="card mb-4 shadow-sm" style="border-radius: 16px;">
+                <div class="card-body text-center p-5">
+                    <h5 class="fw-bold mb-4 text-dark">Overall Risk Score</h5>
+                    <div class="display-1 fw-bold mb-3
                         {% if assessment.risk_level == 'low' %}text-success
                         {% elif assessment.risk_level == 'moderate' %}text-warning
                         {% elif assessment.risk_level == 'high' %}text-danger
                         {% else %}text-danger{% endif %}">
                         {{ assessment.overall_risk_score }}%
                     </div>
-                    <span class="badge fs-6 
+                    <span class="badge fs-6 px-4 py-2
                         {% if assessment.risk_level == 'low' %}risk-low
                         {% elif assessment.risk_level == 'moderate' %}risk-moderate
                         {% elif assessment.risk_level == 'high' %}risk-high
@@ -41,10 +41,10 @@
                     </span>
                 </div>
             </div>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h6 class="fw-bold mb-0">Risk Breakdown</h6>
+
+            <div class="card mb-4 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 pt-4 pb-3">
+                    <h6 class="fw-bold mb-0 text-dark fs-5">Risk Breakdown</h6>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -52,12 +52,13 @@
                             <span>Cardiovascular</span>
                             <span class="fw-medium">{{ assessment.cardiovascular_risk }}%</span>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar 
-                                {% if assessment.cardiovascular_risk < 25 %}bg-success
-                                {% elif assessment.cardiovascular_risk < 50 %}bg-warning
-                                {% else %}bg-danger{% endif %}" 
-                                style="width: {{ assessment.cardiovascular_risk }}%"></div>
+                        <div class="progress mb-3" style="height: 10px; border-radius: 5px;">
+                            <div class="progress-bar
+                                {% if assessment.cardiovascular_risk < 25 %}" style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.cardiovascular_risk }}%">
+                                {% elif assessment.cardiovascular_risk < 50 %}" style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.cardiovascular_risk }}%">
+                                {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626); width: {{ assessment.cardiovascular_risk }}%">
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     
@@ -66,26 +67,28 @@
                             <span>Diabetes</span>
                             <span class="fw-medium">{{ assessment.diabetes_risk }}%</span>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar 
-                                {% if assessment.diabetes_risk < 25 %}bg-success
-                                {% elif assessment.diabetes_risk < 50 %}bg-warning
-                                {% else %}bg-danger{% endif %}" 
-                                style="width: {{ assessment.diabetes_risk }}%"></div>
+                        <div class="progress mb-3" style="height: 10px; border-radius: 5px;">
+                            <div class="progress-bar
+                                {% if assessment.diabetes_risk < 25 %}" style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.diabetes_risk }}%">
+                                {% elif assessment.diabetes_risk < 50 %}" style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.diabetes_risk }}%">
+                                {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626); width: {{ assessment.diabetes_risk }}%">
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     
                     <div class="mb-0">
                         <div class="d-flex justify-content-between mb-1">
-                            <span>Lifestyle</span>
+                            <span>Hypertension</span>
                             <span class="fw-medium">{{ assessment.lifestyle_risk }}%</span>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar 
-                                {% if assessment.lifestyle_risk < 25 %}bg-success
-                                {% elif assessment.lifestyle_risk < 50 %}bg-warning
-                                {% else %}bg-danger{% endif %}" 
-                                style="width: {{ assessment.lifestyle_risk }}%"></div>
+                        <div class="progress" style="height: 10px; border-radius: 5px;">
+                            <div class="progress-bar
+                                {% if assessment.lifestyle_risk < 25 %}" style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.lifestyle_risk }}%">
+                                {% elif assessment.lifestyle_risk < 50 %}" style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.lifestyle_risk }}%">
+                                {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626); width: {{ assessment.lifestyle_risk }}%">
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -384,7 +387,7 @@
     new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ['Cardiovascular', 'Diabetes', 'Lifestyle'],
+            labels: ['Cardiovascular', 'Diabetes', 'Hypertension'],
             datasets: [{
                 label: 'Risk Score',
                 data: [

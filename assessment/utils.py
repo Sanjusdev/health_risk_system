@@ -2,6 +2,7 @@
 Utility functions for health risk assessment calculations
 """
 from datetime import date
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def calculate_age(birth_date):
@@ -34,6 +35,9 @@ def get_bmi_category(bmi):
 
 def get_bp_category(systolic, diastolic):
     """Get blood pressure category"""
+    if systolic is None or diastolic is None:
+        return "Unknown"
+    
     if systolic < 120 and diastolic < 80:
         return "Normal"
     elif systolic < 130 and diastolic < 80:
@@ -192,69 +196,76 @@ def calculate_diabetes_risk(assessment):
     return min(risk_score, 100)
 
 
+
+
 def calculate_lifestyle_risk(assessment):
     """
     Calculate lifestyle risk score (0-100)
-    Based on smoking, alcohol, diet, sleep, stress, activity
+    Based on blood pressure readings, BMI, age, smoking, family history, and other lifestyle risk factors
     """
     risk_score = 0
-    
-    # Smoking contribution (0-25 points)
+
+    # Blood pressure contribution (0-40 points) - Most important factor
+    systolic = assessment.systolic_bp
+    diastolic = assessment.diastolic_bp
+
+    if systolic >= 180 or diastolic >= 120:
+        risk_score += 40  # Hypertensive crisis
+    elif systolic >= 140 or diastolic >= 90:
+        risk_score += 30  # Stage 2 hypertension
+    elif systolic >= 130 or diastolic >= 80:
+        risk_score += 20  # Stage 1 hypertension
+    elif systolic >= 120:
+        risk_score += 10  # Elevated
+
+    # BMI contribution (0-15 points)
+    if assessment.bmi:
+        bmi = float(assessment.bmi)
+        if bmi >= 30:
+            risk_score += 15  # Obese
+        elif bmi >= 25:
+            risk_score += 10  # Overweight
+        elif bmi < 18.5:
+            risk_score += 5   # Underweight (also a risk factor)
+
+    # Age contribution (0-10 points) - Hypertension risk increases with age
+    try:
+        age = calculate_age(assessment.user.profile.date_of_birth) if hasattr(assessment.user, 'profile') and assessment.user.profile.date_of_birth else None
+    except (ObjectDoesNotExist, AttributeError):
+        age = None
+    if age:
+        if age >= 65:
+            risk_score += 10
+        elif age >= 45:
+            risk_score += 7
+        elif age >= 35:
+            risk_score += 4
+
+    # Smoking contribution (0-15 points)
     smoking_scores = {
         'never': 0,
         'former': 5,
-        'occasional': 12,
-        'regular': 20,
-        'heavy': 25,
-    }
-    risk_score += smoking_scores.get(assessment.smoking_status, 0)
-    
-    # Alcohol contribution (0-15 points)
-    alcohol_scores = {
-        'none': 0,
-        'occasional': 3,
-        'moderate': 8,
+        'occasional': 8,
+        'regular': 12,
         'heavy': 15,
     }
+    risk_score += smoking_scores.get(assessment.smoking_status, 0)
+
+    # Family history contribution (0-10 points)
+    if assessment.family_history_heart:
+        risk_score += 7
+    if assessment.family_history_diabetes:
+        risk_score += 3  # Diabetes is also a risk factor for hypertension
+
+    # Alcohol contribution (0-10 points)
+    alcohol_scores = {
+        'none': 0,
+        'occasional': 2,
+        'moderate': 6,
+        'heavy': 10,
+    }
     risk_score += alcohol_scores.get(assessment.alcohol_consumption, 0)
-    
-    # Diet contribution (0-20 points)
-    diet_scores = {
-        'excellent': 0,
-        'good': 5,
-        'fair': 12,
-        'poor': 20,
-    }
-    risk_score += diet_scores.get(assessment.diet_quality, 10)
-    
-    # Sleep contribution (0-15 points)
-    sleep_scores = {
-        'excellent': 0,
-        'good': 3,
-        'fair': 8,
-        'poor': 15,
-    }
-    risk_score += sleep_scores.get(assessment.sleep_quality, 8)
-    
-    # Stress contribution (0-15 points)
-    stress_scores = {
-        'low': 0,
-        'moderate': 5,
-        'high': 10,
-        'very_high': 15,
-    }
-    risk_score += stress_scores.get(assessment.stress_level, 8)
-    
-    # Activity level contribution (0-10 points)
-    activity_scores = {
-        'very_active': 0,
-        'active': 2,
-        'moderate': 4,
-        'light': 7,
-        'sedentary': 10,
-    }
-    risk_score += activity_scores.get(assessment.activity_level, 5)
-    
+
     return min(risk_score, 100)
 
 
@@ -404,7 +415,7 @@ def process_assessment(assessment):
     """
     # Calculate all risk scores
     overall, level, cardiovascular, diabetes, lifestyle = calculate_overall_risk(assessment)
-    
+
     # Update assessment with calculated values
     assessment.overall_risk_score = overall
     assessment.risk_level = level

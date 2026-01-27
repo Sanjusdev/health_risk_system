@@ -6,45 +6,65 @@
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Take Control of Your Health</h1>
-                <p class="lead mb-4">
-                    Get personalized health risk assessments based on your lifestyle, 
-                    medical history, and vital signs. Understand your risks and receive 
-                    actionable recommendations to improve your health.
-                </p>
-                <div class="d-flex gap-3">
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg">
-                        <i class="fas fa-clipboard-list me-2"></i>Start Assessment
-                    </a>
-                    <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                    </a>
-                    {% else %}
-                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg">
-                        <i class="fas fa-clipboard-list me-2"></i>Try Free Assessment
-                    </a>
-                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>Register to Save
-                    </a>
-                    {% endif %}
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <h1 class="display-3 fw-bold mb-4 text-white">
+                        Take Control of Your
+                        <span class="text-gradient">Health</span>
+                    </h1>
+                    <p class="lead mb-5 fs-5 text-white-50">
+                        Get comprehensive health risk assessments based on your lifestyle,
+                        medical history, and vital signs. Understand your risks and receive
+                        personalized recommendations to improve your well-being.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg px-4 py-3 fw-semibold">
+                            <i class="fas fa-clipboard-list me-2"></i>Start Assessment
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold">
+                            <i class="fas fa-tachometer-alt me-2"></i>View Dashboard
+                        </a>
+                        {% else %}
+                        <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg px-4 py-3 fw-semibold">
+                            <i class="fas fa-clipboard-list me-2"></i>Try Free Assessment
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4">
+                        <small class="text-white-50">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            HIPAA Compliant • No Personal Data Stored • Free Forever
+                        </small>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6 text-center mt-5 mt-lg-0">
-                <i class="fas fa-heartbeat" style="font-size: 15rem; opacity: 0.3;"></i>
+            <div class="col-lg-5 text-center mt-5 mt-lg-0">
+                <div class="hero-visual">
+                    <div class="hero-icon-wrapper">
+                        <i class="fas fa-heartbeat hero-main-icon"></i>
+                        <div class="floating-elements">
+                            <div class="floating-circle circle-1"></div>
+                            <div class="floating-circle circle-2"></div>
+                            <div class="floating-circle circle-3"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Features Section -->
-<section class="py-5">
+<section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Comprehensive Health Assessment</h2>
-            <p class="text-muted">Our platform analyzes multiple health factors to give you a complete picture</p>
+            <p class="text-muted fs-5 mb-4">Our platform analyzes multiple health factors to give you a complete picture of your well-being</p>
         </div>
         
         <div class="row g-4">
@@ -77,9 +97,9 @@
                     <div class="feature-icon orange mx-auto">
                         <i class="fas fa-running"></i>
                     </div>
-                    <h5 class="fw-bold">Lifestyle Analysis</h5>
+                    <h5 class="fw-bold">Lifestyle Risk Factors</h5>
                     <p class="text-muted mb-0">
-                        Get insights on how your diet, exercise, sleep, and stress affect your health.
+                        Analyze how your diet, exercise, sleep patterns, and stress levels impact your overall health risks.
                     </p>
                 </div>
             </div>
@@ -100,11 +120,11 @@
 </section>
 
 <!-- How It Works Section -->
-<section class="py-5 bg-white">
+<section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">How It Works</h2>
-            <p class="text-muted">Three simple steps to understand your health better</p>
+            <p class="text-muted fs-5 mb-4">Three simple steps to understand your health better</p>
         </div>
         
         <div class="row g-4">
@@ -142,30 +162,34 @@
 </section>
 
 <!-- Statistics Section -->
-<section class="py-5">
+<section class="py-5 bg-light">
     <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Trusted by Health Enthusiasts</h2>
+            <p class="text-muted fs-5">Join thousands who have taken control of their health</p>
+        </div>
         <div class="row g-4 text-center">
             <div class="col-md-3">
                 <div class="stat-card">
-                    <div class="stat-value text-primary">15+</div>
+                    <div class="stat-value">15+</div>
                     <div class="stat-label">Health Factors Analyzed</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card">
-                    <div class="stat-value text-success">3</div>
+                    <div class="stat-value">3</div>
                     <div class="stat-label">Risk Categories</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card">
-                    <div class="stat-value text-warning">100%</div>
+                    <div class="stat-value">100%</div>
                     <div class="stat-label">Free to Use</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card">
-                    <div class="stat-value text-danger">24/7</div>
+                    <div class="stat-value">24/7</div>
                     <div class="stat-label">Available Anytime</div>
                 </div>
             </div>
@@ -174,24 +198,29 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-white">
+<section class="py-5">
     <div class="container">
-        <div class="card border-0 bg-primary text-white p-5">
+        <div class="card border-0 shadow-lg p-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); color: white; border-radius: 20px;">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h3 class="fw-bold mb-3">Ready to Assess Your Health?</h3>
-                    <p class="mb-0 opacity-75">
-                        Join thousands of users who have taken control of their health. 
-                        Start your free assessment today and get personalized insights.
+                    <h3 class="fw-bold mb-3 display-6">Ready to Assess Your Health?</h3>
+                    <p class="mb-0 fs-5 opacity-90">
+                        Join thousands of users who have taken control of their health.
+                        Start your free assessment today and get personalized insights in minutes.
                     </p>
+                    <div class="mt-3">
+                        <small class="opacity-75">
+                            <i class="fas fa-check-circle me-1"></i>No credit card required • Instant results • Privacy protected
+                        </small>
+                    </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
                     {% if user.is_authenticated %}
-                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg">
+                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg px-4 py-3 fw-semibold">
                         Start Now <i class="fas fa-arrow-right ms-2"></i>
                     </a>
                     {% else %}
-                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg">
+                    <a href="{% url 'new_assessment' %}" class="btn btn-light btn-lg px-4 py-3 fw-semibold">
                         Try Assessment <i class="fas fa-arrow-right ms-2"></i>
                     </a>
                     {% endif %}

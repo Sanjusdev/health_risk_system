@@ -105,42 +105,45 @@ def new_assessment(request):
     if request.method == 'POST':
         form = HealthAssessmentForm(request.POST)
         if form.is_valid():
-            assessment = form.save(commit=False)
+            try:
+                assessment = form.save(commit=False)
 
-            # Only save to database if user is authenticated
-            if request.user.is_authenticated:
-                assessment.user = request.user
-                assessment.save()
+                # Only save to database if user is authenticated
+                if request.user.is_authenticated:
+                    assessment.user = request.user
+                    assessment.save()
 
-                # Process assessment (calculate risks and recommendations)
-                assessment = process_assessment(assessment)
-                assessment.save()
+                    # Process assessment (calculate risks and recommendations)
+                    assessment = process_assessment(assessment)
+                    assessment.save()
 
-                messages.success(request, 'Assessment completed and saved successfully!')
-                return redirect('assessment_result', pk=assessment.pk)
-            else:
-                # For guest users, calculate BMI and process without saving
-                assessment.calculate_bmi()  # Calculate BMI manually since we don't save
-                assessment = process_assessment(assessment)
+                    messages.success(request, 'Assessment completed and saved successfully!')
+                    return redirect('assessment_result', pk=assessment.pk)
+                else:
+                    # For guest users, calculate BMI and process without saving
+                    assessment.calculate_bmi()  # Calculate BMI manually since we don't save
+                    assessment = process_assessment(assessment)
 
-                # Store assessment data in session for guest results
-                # Convert Decimal objects to floats for JSON serialization
-                request.session['guest_assessment'] = {
-                    'height': float(assessment.height) if assessment.height else 0,
-                    'weight': float(assessment.weight) if assessment.weight else 0,
-                    'bmi': float(assessment.bmi) if assessment.bmi else 0,
-                    'systolic_bp': assessment.systolic_bp,
-                    'diastolic_bp': assessment.diastolic_bp,
-                    'overall_risk_score': float(assessment.overall_risk_score) if assessment.overall_risk_score else 0,
-                    'risk_level': assessment.risk_level,
-                    'cardiovascular_risk': float(assessment.cardiovascular_risk) if assessment.cardiovascular_risk else 0,
-                    'diabetes_risk': float(assessment.diabetes_risk) if assessment.diabetes_risk else 0,
-                    'lifestyle_risk': float(assessment.lifestyle_risk) if assessment.lifestyle_risk else 0,
-                    'recommendations': assessment.recommendations,
-                }
+                    # Store assessment data in session for guest results
+                    # Convert Decimal objects to floats for JSON serialization
+                    request.session['guest_assessment'] = {
+                        'height': float(assessment.height) if assessment.height else 0,
+                        'weight': float(assessment.weight) if assessment.weight else 0,
+                        'bmi': float(assessment.bmi) if assessment.bmi else 0,
+                        'systolic_bp': assessment.systolic_bp,
+                        'diastolic_bp': assessment.diastolic_bp,
+                        'overall_risk_score': float(assessment.overall_risk_score) if assessment.overall_risk_score else 0,
+                        'risk_level': assessment.risk_level,
+                        'cardiovascular_risk': float(assessment.cardiovascular_risk) if assessment.cardiovascular_risk else 0,
+                        'diabetes_risk': float(assessment.diabetes_risk) if assessment.diabetes_risk else 0,
+                        'hypertension_risk': float(assessment.lifestyle_risk) if assessment.lifestyle_risk else 0,
+                        'recommendations': assessment.recommendations,
+                    }
 
-                messages.info(request, 'Assessment completed! Register or login to save your results.')
-                return redirect('guest_assessment_result')
+                    messages.info(request, 'Assessment completed! Register or login to save your results.')
+                    return redirect('guest_assessment_result')
+            except Exception as e:
+                messages.error(request, f'An error occurred while processing your assessment: {str(e)}')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -169,11 +172,8 @@ def guest_assessment_result(request):
             self.risk_level = data.get('risk_level')
             self.cardiovascular_risk = data.get('cardiovascular_risk')
             self.diabetes_risk = data.get('diabetes_risk')
-            self.lifestyle_risk = data.get('lifestyle_risk')
+            self.hypertension_risk = data.get('lifestyle_risk')
             self.recommendations = data.get('recommendations')
-
-        def get_risk_level_display(self):
-            return dict(HealthAssessment.RISK_LEVEL_CHOICES).get(self.risk_level, 'Unknown')
 
         def get_risk_level_display(self):
             return dict(HealthAssessment.RISK_LEVEL_CHOICES).get(self.risk_level, 'Unknown')
@@ -340,17 +340,20 @@ def goal_delete(request, pk):
 @login_required
 def api_assessment_data(request):
     """API endpoint for assessment chart data"""
-    assessments = HealthAssessment.objects.filter(
-        user=request.user,
-        overall_risk_score__isnull=False
-    ).order_by('created_at')[:10]
-    
-    data = {
-        'labels': [a.created_at.strftime('%Y-%m-%d') for a in assessments],
-        'overall': [a.overall_risk_score for a in assessments],
-        'cardiovascular': [a.cardiovascular_risk for a in assessments],
-        'diabetes': [a.diabetes_risk for a in assessments],
-        'lifestyle': [a.lifestyle_risk for a in assessments],
-    }
-    
-    return JsonResponse(data)
+    try:
+        assessments = HealthAssessment.objects.filter(
+            user=request.user,
+            overall_risk_score__isnull=False
+        ).order_by('created_at')[:10]
+        
+        data = {
+            'labels': [a.created_at.strftime('%Y-%m-%d') for a in assessments],
+            'overall': [a.overall_risk_score for a in assessments],
+            'cardiovascular': [a.cardiovascular_risk for a in assessments],
+            'diabetes': [a.diabetes_risk for a in assessments],
+            'hypertension': [a.lifestyle_risk for a in assessments],
+        }
+        
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': 'Failed to retrieve assessment data'}, status=500)

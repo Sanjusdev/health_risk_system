@@ -24,6 +24,14 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}'s Profile"
     
+    def get_age(self):
+        """Calculate and return user's age"""
+        if self.date_of_birth:
+            from datetime import date
+            today = date.today()
+            return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+        return None
+    
     class Meta:
         verbose_name = 'User Profile'
         verbose_name_plural = 'User Profiles'
@@ -178,12 +186,22 @@ class HealthAssessment(models.Model):
     def calculate_bmi(self):
         """Calculate BMI from height and weight"""
         if self.height and self.weight:
-            height_m = float(self.height) / 100
-            self.bmi = round(float(self.weight) / (height_m ** 2), 2)
+            try:
+                height_m = float(self.height) / 100
+                if height_m > 0:  # Prevent division by zero
+                    self.bmi = round(float(self.weight) / (height_m ** 2), 2)
+                else:
+                    self.bmi = None
+            except (ValueError, TypeError):
+                self.bmi = None
+        else:
+            self.bmi = None
         return self.bmi
     
     def save(self, *args, **kwargs):
-        self.calculate_bmi()
+        """Override save to calculate BMI before saving"""
+        if self.height and self.weight:
+            self.calculate_bmi()
         super().save(*args, **kwargs)
     
     def __str__(self):

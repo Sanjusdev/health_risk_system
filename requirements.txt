@@ -2,3 +2,4 @@ Django==4.2.7
 pymysql==1.1.0
 django-jazzmin==2.6.0
 Pillow==10.1.0
+python-dotenv==1.0.0
