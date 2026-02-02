@@ -117,7 +117,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'health_risk_db',
-        'USER': 'root',
+        'USER': 'django_user',
         'PASSWORD': '987456',
         'HOST': 'localhost',
         'PORT': '3306',

@@ -77,9 +77,9 @@ class HealthAssessmentForm(forms.ModelForm):
             # Physical measurements
             'height': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Height in cm (e.g., 170)',
-                'min': '50',
-                'max': '300',
+                'placeholder': 'Height in feet (e.g., 5.7)',
+                'min': '3',
+                'max': '10',
                 'step': '0.1'
             }),
             'weight': forms.NumberInput(attrs={

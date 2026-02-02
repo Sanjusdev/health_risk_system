@@ -44,24 +44,20 @@ def login_view(request):
     """User login view"""
     if request.user.is_authenticated:
         return redirect('dashboard')
-    
+
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome back, {username}!')
-                next_url = request.GET.get('next', 'dashboard')
-                return redirect(next_url)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Welcome back, {username}!')
+            next_url = request.GET.get('next', 'dashboard')
+            return redirect(next_url)
         else:
             messages.error(request, 'Invalid username or password.')
-    else:
-        form = AuthenticationForm()
-    
-    return render(request, 'login.html', {'form': form})
+
+    return render(request, 'login.html')
 
 
 def logout_view(request):

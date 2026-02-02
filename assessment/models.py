@@ -95,8 +95,8 @@ class HealthAssessment(models.Model):
     # Physical measurements
     height = models.DecimalField(
         max_digits=5, decimal_places=2,
-        validators=[MinValueValidator(50), MaxValueValidator(300)],
-        help_text="Height in centimeters"
+        validators=[MinValueValidator(3), MaxValueValidator(10)],
+        help_text="Height in feet"
     )
     weight = models.DecimalField(
         max_digits=5, decimal_places=2,
@@ -187,7 +187,7 @@ class HealthAssessment(models.Model):
         """Calculate BMI from height and weight"""
         if self.height and self.weight:
             try:
-                height_m = float(self.height) / 100
+                height_m = float(self.height) / 3.28084  # Convert feet to meters
                 if height_m > 0:  # Prevent division by zero
                     self.bmi = round(float(self.weight) / (height_m ** 2), 2)
                 else:
