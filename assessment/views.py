@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib import messages
 from django.db.models import Avg
 from django.http import JsonResponse
+from django.urls import reverse_lazy
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import HealthAssessment, UserProfile, HealthGoal
 from .forms import (
     HealthAssessmentForm, UserProfileForm, CustomUserCreationForm,
@@ -65,6 +69,33 @@ def logout_view(request):
     logout(request)
     messages.info(request, 'You have been logged out.')
     return redirect('home')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    """Custom password reset view with email configuration"""
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+    form_class = PasswordResetForm
+    success_url = reverse_lazy('password_reset_done')
+    
+    def form_valid(self, form):
+        """Override to send email with proper configuration"""
+        opts = {
+            'use_https': self.request.is_secure(),
+            'token_generator': self.token_generator,
+            'from_email': settings.DEFAULT_FROM_EMAIL,
+            'email_template_name': self.email_template_name,
+            'subject_template_name': self.subject_template_name,
+            'request': self.request,
+            'html_email_template_name': None,
+            'extra_email_context': {
+                'site_name': 'Health Risk Assessment',
+            },
+        }
+        form.save(**opts)
+        messages.success(self.request, 'Password reset email has been sent. Please check your inbox.')
+        return super().form_valid(form)
 
 
 @login_required
