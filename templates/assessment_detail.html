@@ -2,15 +2,115 @@
 
 {% block title %}Assessment Details - Health Risk Assessment{% endblock %}
 
+{% block extra_css %}
+<style>
+    @media print {
+
+        .no-print,
+        .navbar,
+        .footer,
+        .btn,
+        .alert {
+            display: none !important;
+        }
+
+        body {
+            background-color: white;
+            padding-top: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            break-inside: avoid;
+        }
+
+        .progress {
+            height: 10px !important;
+            border: 1px solid #ccc;
+        }
+
+        .progress-bar {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .bg-success {
+            background-color: #198754 !important;
+        }
+
+        .bg-warning {
+            background-color: #ffc107 !important;
+        }
+
+        .bg-danger {
+            background-color: #dc3545 !important;
+        }
+
+        .risk-low {
+            background: #22c55e !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .risk-moderate {
+            background: #f59e0b !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .risk-high {
+            background: #f97316 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .risk-very-high {
+            background: #ef4444 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* Ensure charts/icons print */
+        i.fas {
+            color: #0f766e !important;
+            /* Force primary color for icons */
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
+<div class="container py-5" id="assessment-detail-container">
+    <!-- Action Buttons -->
+    <div class="row mb-4 no-print">
+        <div class="col-12 text-end">
+            <button onclick="window.print()" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-print me-2"></i>Print
+            </button>
+            <button id="download-pdf" class="btn btn-primary">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </button>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="row mb-5">
         <div class="col-12">
-            <nav aria-label="breadcrumb" class="mb-4">
+            <nav aria-label="breadcrumb" class="mb-4 no-print">
                 <ol class="breadcrumb" style="background: transparent; padding: 0;">
-                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}" class="text-decoration-none">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'assessment_history' %}" class="text-decoration-none">History</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"
+                            class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'assessment_history' %}"
+                            class="text-decoration-none">History</a></li>
                     <li class="breadcrumb-item active text-muted">Assessment Details</li>
                 </ol>
             </nav>
@@ -18,7 +118,7 @@
             <p class="text-muted fs-5 mb-0">Completed on {{ assessment.created_at|date:"F d, Y at g:i A" }}</p>
         </div>
     </div>
-    
+
     <div class="row g-4">
         <!-- Left Column - Risk Summary -->
         <div class="col-lg-4">
@@ -54,14 +154,17 @@
                         </div>
                         <div class="progress mb-3" style="height: 10px; border-radius: 5px;">
                             <div class="progress-bar
-                                {% if assessment.cardiovascular_risk < 25 %}" style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.cardiovascular_risk }}%">
-                                {% elif assessment.cardiovascular_risk < 50 %}" style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.cardiovascular_risk }}%">
-                                {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626); width: {{ assessment.cardiovascular_risk }}%">
-                                {% endif %}
+                                {% if assessment.cardiovascular_risk < 25 %}"
+                                style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.cardiovascular_risk }}%">
+                                {% elif assessment.cardiovascular_risk < 50 %}"
+                                    style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.cardiovascular_risk }}%">
+                                    {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626);
+                                    width: {{ assessment.cardiovascular_risk }}%">
+                                    {% endif %}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
                             <span>Diabetes</span>
@@ -69,14 +172,17 @@
                         </div>
                         <div class="progress mb-3" style="height: 10px; border-radius: 5px;">
                             <div class="progress-bar
-                                {% if assessment.diabetes_risk < 25 %}" style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.diabetes_risk }}%">
-                                {% elif assessment.diabetes_risk < 50 %}" style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.diabetes_risk }}%">
-                                {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626); width: {{ assessment.diabetes_risk }}%">
-                                {% endif %}
+                                {% if assessment.diabetes_risk < 25 %}"
+                                style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.diabetes_risk }}%">
+                                {% elif assessment.diabetes_risk < 50 %}"
+                                    style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.diabetes_risk }}%">
+                                    {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626);
+                                    width: {{ assessment.diabetes_risk }}%">
+                                    {% endif %}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-0">
                         <div class="d-flex justify-content-between mb-1">
                             <span>Hypertension</span>
@@ -84,23 +190,26 @@
                         </div>
                         <div class="progress" style="height: 10px; border-radius: 5px;">
                             <div class="progress-bar
-                                {% if assessment.lifestyle_risk < 25 %}" style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.lifestyle_risk }}%">
-                                {% elif assessment.lifestyle_risk < 50 %}" style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.lifestyle_risk }}%">
-                                {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626); width: {{ assessment.lifestyle_risk }}%">
-                                {% endif %}
+                                {% if assessment.lifestyle_risk < 25 %}"
+                                style="background: linear-gradient(90deg, var(--success-color), #16a34a); width: {{ assessment.lifestyle_risk }}%">
+                                {% elif assessment.lifestyle_risk < 50 %}"
+                                    style="background: linear-gradient(90deg, var(--warning-color), #d97706); width: {{ assessment.lifestyle_risk }}%">
+                                    {% else %}" style="background: linear-gradient(90deg, var(--danger-color), #dc2626);
+                                    width: {{ assessment.lifestyle_risk }}%">
+                                    {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-body">
                     <canvas id="riskChart" height="200"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <!-- Right Column - Details -->
         <div class="col-lg-8">
             <!-- Physical Measurements -->
@@ -146,7 +255,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Vital Signs -->
             <div class="card mb-4">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
@@ -160,7 +269,8 @@
                         <div class="col-md-4">
                             <div class="text-center p-3 bg-light rounded">
                                 <small class="text-muted d-block">Blood Pressure</small>
-                                <strong class="h5">{{ assessment.systolic_bp }}/{{ assessment.diastolic_bp }} mmHg</strong>
+                                <strong class="h5">{{ assessment.systolic_bp }}/{{ assessment.diastolic_bp }}
+                                    mmHg</strong>
                                 <span class="badge 
                                     {% if bp_category == 'Normal' %}bg-success
                                     {% elif bp_category == 'Elevated' %}bg-warning
@@ -184,7 +294,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Cholesterol -->
             {% if assessment.cholesterol_total %}
             <div class="card mb-4">
@@ -218,7 +328,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Lifestyle Factors -->
             <div class="card mb-4">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
@@ -240,7 +350,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="d-flex align-items-center p-3 bg-light rounded">
-                                <i class="fas fa-smoking{% if assessment.smoking_status == 'never' %}-ban text-success{% else %} text-danger{% endif %} me-3 fa-lg"></i>
+                                <i
+                                    class="fas fa-smoking{% if assessment.smoking_status == 'never' %}-ban text-success{% else %} text-danger{% endif %} me-3 fa-lg"></i>
                                 <div>
                                     <small class="text-muted d-block">Smoking</small>
                                     <strong>{{ assessment.get_smoking_status_display }}</strong>
@@ -286,7 +397,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Medical History -->
             <div class="card mb-4">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
@@ -301,15 +412,18 @@
                             <h6 class="text-muted mb-3">Personal Conditions</h6>
                             <ul class="list-unstyled">
                                 <li class="mb-2">
-                                    <i class="fas fa-{% if assessment.has_diabetes %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    <i
+                                        class="fas fa-{% if assessment.has_diabetes %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
                                     Diabetes
                                 </li>
                                 <li class="mb-2">
-                                    <i class="fas fa-{% if assessment.has_hypertension %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    <i
+                                        class="fas fa-{% if assessment.has_hypertension %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
                                     Hypertension
                                 </li>
                                 <li class="mb-2">
-                                    <i class="fas fa-{% if assessment.has_heart_disease %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    <i
+                                        class="fas fa-{% if assessment.has_heart_disease %}check-circle text-danger{% else %}times-circle text-muted{% endif %} me-2"></i>
                                     Heart Disease
                                 </li>
                             </ul>
@@ -318,15 +432,18 @@
                             <h6 class="text-muted mb-3">Family History</h6>
                             <ul class="list-unstyled">
                                 <li class="mb-2">
-                                    <i class="fas fa-{% if assessment.family_history_heart %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    <i
+                                        class="fas fa-{% if assessment.family_history_heart %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
                                     Heart Disease
                                 </li>
                                 <li class="mb-2">
-                                    <i class="fas fa-{% if assessment.family_history_diabetes %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    <i
+                                        class="fas fa-{% if assessment.family_history_diabetes %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
                                     Diabetes
                                 </li>
                                 <li class="mb-2">
-                                    <i class="fas fa-{% if assessment.family_history_cancer %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
+                                    <i
+                                        class="fas fa-{% if assessment.family_history_cancer %}check-circle text-warning{% else %}times-circle text-muted{% endif %} me-2"></i>
                                     Cancer
                                 </li>
                             </ul>
@@ -334,7 +451,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Recommendations -->
             <div class="card">
                 <div class="card-header bg-white border-0 pt-4 pb-0">
@@ -364,9 +481,9 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Actions -->
-    <div class="row mt-4">
+    <div class="row mt-4 no-print">
         <div class="col-12">
             <div class="d-flex justify-content-between">
                 <a href="{% url 'assessment_history' %}" class="btn btn-outline-secondary">
@@ -382,7 +499,31 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- html2pdf.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
+    document.getElementById('download-pdf').addEventListener('click', function () {
+        const element = document.getElementById('assessment-detail-container');
+
+        // Clone the element to modify it for PDF generation without affecting the view
+        const clone = element.cloneNode(true);
+
+        // Remove no-print elements from the clone
+        const noPrintElements = clone.querySelectorAll('.no-print');
+        noPrintElements.forEach(el => el.remove());
+
+        const opt = {
+            margin: [0.5, 0.5],
+            filename: 'Health_Risk_Assessment_Detail.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(clone).save();
+    });
+
     const ctx = document.getElementById('riskChart').getContext('2d');
     new Chart(ctx, {
         type: 'radar',
@@ -392,32 +533,32 @@
                 label: 'Risk Score',
                 data: [
                     {{ assessment.cardiovascular_risk }},
-                    {{ assessment.diabetes_risk }},
+            {{ assessment.diabetes_risk }},
                     {{ assessment.lifestyle_risk }}
                 ],
-                backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                borderColor: 'rgba(37, 99, 235, 1)',
-                borderWidth: 2,
-                pointBackgroundColor: 'rgba(37, 99, 235, 1)'
+        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+        borderColor: 'rgba(37, 99, 235, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(37, 99, 235, 1)'
             }]
         },
         options: {
-            responsive: true,
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        stepSize: 25
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
+        responsive: true,
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                    stepSize: 25
                 }
             }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
         }
+    }
     });
 </script>
 {% endblock %}

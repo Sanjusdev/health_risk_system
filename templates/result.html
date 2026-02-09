@@ -2,8 +2,67 @@
 
 {% block title %}Assessment Results - Health Risk Assessment{% endblock %}
 
+{% block extra_css %}
+<style>
+    @media print {
+        .no-print, .navbar, .footer, .btn, .alert {
+            display: none !important;
+        }
+        body {
+            background-color: white;
+            padding-top: 0;
+        }
+        .container {
+            max-width: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            break-inside: avoid;
+        }
+        .progress {
+            height: 10px !important;
+            border: 1px solid #ccc;
+        }
+        .progress-bar {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .bg-success { background-color: #198754 !important; }
+        .bg-warning { background-color: #ffc107 !important; }
+        .bg-danger { background-color: #dc3545 !important; }
+        
+        .risk-low { background: #22c55e !important; color: white !important; -webkit-print-color-adjust: exact; }
+        .risk-moderate { background: #f59e0b !important; color: white !important; -webkit-print-color-adjust: exact; }
+        .risk-high { background: #f97316 !important; color: white !important; -webkit-print-color-adjust: exact; }
+        .risk-very-high { background: #ef4444 !important; color: white !important; -webkit-print-color-adjust: exact; }
+        
+        /* Ensure charts/icons print */
+        i.fas {
+            color: #0f766e !important; /* Force primary color for icons */
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
+<div class="container py-5" id="assessment-container">
+    <!-- Action Buttons -->
+    <div class="row mb-4 no-print">
+        <div class="col-12 text-end">
+            <button onclick="window.print()" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-print me-2"></i>Print
+            </button>
+            <button id="download-pdf" class="btn btn-primary">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </button>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
@@ -234,7 +293,7 @@
     </div>
     
     <!-- Actions -->
-    <div class="row">
+    <div class="row no-print">
         <div class="col-12">
             <div class="card bg-light border-0">
                 <div class="card-body p-4">
@@ -281,9 +340,29 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- html2pdf.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
-    // Risk Chart
-    const ctx = document.createElement('canvas');
-    // You could add a chart here if needed
+    document.getElementById('download-pdf').addEventListener('click', function() {
+        const element = document.getElementById('assessment-container');
+        
+        // Clone the element to modify it for PDF generation without affecting the view
+        const clone = element.cloneNode(true);
+        
+        // Remove no-print elements from the clone
+        const noPrintElements = clone.querySelectorAll('.no-print');
+        noPrintElements.forEach(el => el.remove());
+        
+        const opt = {
+            margin:       [0.5, 0.5],
+            filename:     'Health_Risk_Assessment_Result.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(clone).save();
+    });
 </script>
 {% endblock %}
