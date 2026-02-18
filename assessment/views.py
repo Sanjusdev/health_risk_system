@@ -312,8 +312,11 @@ def profile_view(request):
 @login_required
 def goals_list(request):
     """View all health goals"""
+    # Fix orphaned goals by assigning them to the current user
+    HealthGoal.objects.filter(user__isnull=True).update(user=request.user)
+
     goals = HealthGoal.objects.filter(user=request.user).order_by('-created_at')
-    
+
     return render(request, 'goals_list.html', {'goals': goals})
 
 

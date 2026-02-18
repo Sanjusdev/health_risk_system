@@ -115,7 +115,7 @@ WSGI_APPLICATION = 'health_risk_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'health_risk_project.custom_mysql',
         'NAME': 'health_risk_db',
         'USER': 'django_user',
         'PASSWORD': '987456',

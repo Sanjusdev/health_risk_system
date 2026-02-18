@@ -249,6 +249,39 @@ class HealthGoal(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def calculate_progress(self):
+        """
+        Calculate progress percentage based on current_value and target_value.
+        Formula: progress = (current_value / target_value) * 100
+        Returns the current progress value if calculation fails.
+        """
+        if not self.current_value or not self.target_value:
+            return self.progress
+        
+        try:
+            # Convert string values to float for calculation
+            current = float(self.current_value)
+            target = float(self.target_value)
+            
+            # Handle division by zero
+            if target == 0:
+                return 0
+            
+            # Calculate progress percentage
+            calculated_progress = (current / target) * 100
+            
+            # Clamp between 0 and 100
+            return max(0, min(100, int(round(calculated_progress))))
+            
+        except (ValueError, TypeError):
+            # If values are not numeric, return current progress unchanged
+            return self.progress
+    
+    def save(self, *args, **kwargs):
+        """Override save to calculate progress before saving"""
+        self.progress = self.calculate_progress()
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return f"{self.user.username}'s goal: {self.title}"
     

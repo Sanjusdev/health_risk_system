@@ -92,7 +92,7 @@ class HealthAssessmentForm(forms.ModelForm):
             'waist_circumference': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Waist in cm (optional)',
-                'min': '30',
+                'min': '20',
                 'max': '200',
                 'step': '0.1'
             }),
@@ -189,3 +189,14 @@ class HealthGoalForm(forms.ModelForm):
             'progress': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'max': '100'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Additional notes'}),
         }
+        help_texts = {
+            'progress': 'Auto-calculated from current_value/target_value. You can override if needed.',
+            'current_value': 'Enter numeric value for automatic progress calculation',
+            'target_value': 'Enter numeric value for automatic progress calculation',
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make progress field optional (it will be auto-calculated)
+        self.fields['progress'].required = False
+
